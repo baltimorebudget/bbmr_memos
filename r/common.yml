@@ -1,0 +1,6 @@
+---
+mainfont: Roboto
+fontsize: 12pt
+geometry: "left=.75in,right=.75in,top=.85in,bottom=.75in"
+subparagraph: yes
+---

@@ -1,0 +1,24 @@
+```{r setup, include=FALSE}
+options(tinytex.verbose = TRUE)
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+
+options(knitr.table.format = "latex",
+        knitr.kable.NA = '')
+
+```
+
+\hfill \break
+
+\hfill \break
+
+\hfill Fiscal 2024 Budget: Performance Measures \hfill \hfill \hfill \break
+
+\hfill `r agency_clean` Agency Head/Fiscal Officer \hfill `r format(Sys.Date(), format="%B %d %Y")`
+
+As part of broader performance management efforts by the Chief Data Officer and the Mayor’s Office of Performance and Innovation, BBMR will be rolling out a performance measure review process in the coming months. These efforts are aimed at reducing agencies’ reporting burden by identifying duplicative or similar measures, as well as reviewing measures to ensure they best represent the work of the agency and are informative to the public and budget decisions.
+
+After an internal review of agency performance measures reported in the Agency Detail budget publications, several measures were identified as eligible for removal from the publications for various agencies. At this point in time, no measures were identified for your agency. However, we wanted to inform you of this process and the upcoming discussions of performance measures.

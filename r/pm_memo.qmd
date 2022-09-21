@@ -1,0 +1,82 @@
+```{r setup, include=FALSE}
+options(tinytex.verbose = TRUE)
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+
+options(knitr.table.format = "latex",
+        knitr.kable.NA = '')
+
+```
+
+\hfill \break
+
+\hfill \break
+
+\hfill Fiscal 2024 Budget: Performance Measures \hfill \hfill \hfill \break
+
+\hfill `r agency_clean` Agency Head/Fiscal Officer \hfill `r format(Sys.Date(), format="%B %d %Y")`
+
+<!-- \hfill \break -->
+
+<!-- ### FY24 Budget Adjustments -->
+
+<!-- On behalf of Deputy Director of Finance, Robert Cenname, and Budget Director, Laura Larsen, your adjustment figures for Fiscal 2024 are listed below.  -->
+
+<!-- Your BBMR analyst is available for any questions or support. Please work with your analyst regarding any additional changes needed to your current line item budgets in BPFS, including all Funds. -->
+
+```{r Adjustments, echo = FALSE, warning = FALSE}
+# adjustments %>% 
+#   filter(`Agency Name.x` == agency & `$ - Change vs Adopted` != 0) %>%
+#   mutate(`Service - Activity` = paste0(`Program Name`, "-" ,`Activity Name`)) %>%
+#   select(`Service - Activity`, `Fund Name`, `FY23 Adopted`, `FY24 CLS`) %>%
+#   mutate_if(is.numeric, scales::dollar, style_negative = "parens") %>%
+#   # rename(`FY23` = `FY23 Amount Requested`, `FY24` = `FY24 Amount Requested`) %>%
+#   mutate(`FY24 CLS` = case_when(is.na(`FY24 CLS`) ~ replace_na("--"),
+#                             TRUE ~ `FY24 CLS`)) %>%
+#   kable(booktabs = TRUE, format = "latex", longtable = FALSE, align = c("l", "l","r", "r")) %>%
+#   kable_styling(latex_options = c("striped", "hold_position"), full_width = TRUE, position = "center") %>%
+#   row_spec(0, bold = TRUE) %>%
+#   column_spec(1, width = "3.25in") %>%
+#   column_spec(2, width = "1.25in") %>%
+#   column_spec(3:4, width = "1in")
+```
+
+As part of broader performance management efforts by the Chief Data Officer and the Mayor’s Office of Performance and Innovation, BBMR will be rolling out a performance measure review process in the coming months. These efforts are aimed at reducing agencies’ reporting burden by identifying duplicative or similar measures, as well as reviewing measures to ensure they best represent the work of the agency and are informative to the public and budget decisions.
+
+After an internal review of agency performance measures reported in the Agency Detail budget publications, several measures were identified as eligible for removal from the publications. These are measures that are either duplicative of other measures, hard for the general public to understand, or reporting data impacted by factors beyond the agency’s control.
+
+In reviewing `r agency`’s measures, BBMR identified the following measures are possible measures to be removed from budget publications.
+
+```{r PMs, comment = NA, echo = FALSE, warning = FALSE}
+
+# if (agency %in% unique(pm$`Agency Name`)) {
+      pm %>% filter(`Agency Name` == agency) %>% 
+        select(`Service ID`, `Scorecard Measure`) %>%
+      kable(booktabs = TRUE, format = "latex", longtable = TRUE, align = c("l", "l")) %>%
+      kable_styling(latex_options = c("striped", "hold_position"), full_width = TRUE, position = "center") %>%
+      row_spec(0, bold = TRUE) %>%
+      column_spec(2, width = "6in") %>%
+      column_spec(1, width = "1in")
+      # 
+      # } else 
+      # {
+      #     cat("No performance measures to adjust at this time.\n")
+      #   }
+
+
+```
+
+We ask that you take time to review this proposal and provide feedback in writing by Friday, October 7, 2022. If you agree with these recommendations, BBMR will work to archive these measures in Scorecard. If you would like to discuss the recommendations, please let your BBMR analyst know and we will work to schedule a meeting to discuss the measures.
+
+```{r warning = FALSE, echo = FALSE, message = FALSE}
+
+  result <- pm %>% filter(`Agency Name` == agency) %>% summarise(N = n())
+  ##not working, maybe move to qmd file?
+  check$Result[check$`Agency Name`==agency] <- result
+
+```
+
+<!-- \backgroundsetup{contents={}} -->
