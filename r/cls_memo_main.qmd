@@ -1,0 +1,80 @@
+```{r setup, include=FALSE}
+options(tinytex.verbose = TRUE)
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+
+options(knitr.table.format = "latex",
+        knitr.kable.NA = '')
+
+```
+
+\hfill \break
+
+\hfill \break
+
+\hfill Fiscal 2024: Current Level of Service Calculation \hfill \hfill \hfill \break
+
+`r agency_clean` Agency Head/Fiscal Officer \hfill \hfill `r format(Sys.Date(), format="%B %d %Y")`
+
+```{r Total Budget, echo = FALSE, warning = FALSE}
+
+totals <- adjustments %>%
+  filter(`Agency Name` == agency) %>%
+  group_by(`Agency Name`) %>%
+  summarise(FY23 = sum(`FY23 Adopted`, na.rm = TRUE),
+            FY24 = sum(`FY24 CLS`, na.rm = TRUE)) %>%
+  mutate(Change = scales::dollar(FY24 - FY23, style_negative = "parens"),
+         FY23 = scales::dollar(FY23, style_negative = "parens"),
+         FY24 = scales::dollar(FY24, style_negative = "parens"))
+
+```
+
+
+**Fiscal Year 2024 CLS Amount: `r totals$FY24 `**
+
+Your agency’s Fiscal Year 2024 Current Level of Service (CLS) amount is included below. The CLS amount was determined by applying global inflationary factors to the budget and then making specific adjustments based on the submitted build in and build out requests. The table below summarizes your agency’s budget by fund-service. Your Budget Analyst is available to answer specific questions regarding changes reflected in the CLS budget amounts.
+
+```{r Adjustments, echo = FALSE, warning = FALSE}
+
+output <- adjustments %>%
+  filter(`Agency Name` == agency) %>%
+  rename(Service = `Program Name`) %>%
+  # mutate(`Service - Activity` = paste0(`Program Name`, "-" ,`Activity Name`)) %>%
+  select(Service, `Fund Name`, `FY23 Adopted`, `FY24 CLS`) %>%
+  group_by(`Fund Name`, Service) %>%
+  summarise(`FY23 Adopted` = sum(`FY23 Adopted`, na.rm = TRUE),
+            `FY24 CLS` = sum(`FY24 CLS`, na.rm = TRUE)) %>%
+  mutate_if(is.numeric, scales::dollar, style_negative = "parens") %>%
+  mutate(`FY24 CLS` = case_when(is.na(`FY24 CLS`) ~ replace_na("--"),
+                            TRUE ~ `FY24 CLS`))
+
+if (dim(output)[1] > 1) {
+output %>%
+  kable(format = "latex", longtable = TRUE, align = c("l", "l", "l","r", "r"), escape = TRUE) %>%
+  column_spec(1, width = ".25in") %>%
+  column_spec(2, width = "3.75in") %>%
+  column_spec(3:4, width = "1.2in") %>%
+  collapse_rows(columns = 1:2, row_group_label_position = "stack", longtable_clean_cut = FALSE) %>%
+  kable_styling(latex_options = c("repeat_header"), full_width = FALSE, 
+                fixed_thead = FALSE, font_size = 10) %>%
+  row_spec(0, bold = TRUE)} else {
+    output %>%
+  kable(format = "latex", longtable = TRUE, align = c("l", "l", "l","r", "r"), escape = TRUE) %>%
+  kable_styling(latex_options = c("repeat_header"), full_width = FALSE, 
+                fixed_thead = FALSE, font_size = 10) %>%
+  row_spec(0, bold = TRUE) %>%
+  column_spec(1, width = "1in") %>%
+  column_spec(2, width = "3in") %>%
+  column_spec(3:4, width = "1.2in")
+  }
+
+```
+We have also included excel files with the line item and position detail showing the agency’s CLS amounts. Please reference the FY 2024 Budget Instructions and Kickoff Slides for additional information and resources on completing your FY 2024 Operating Request. All systems are open for your team to begin their work on operating budget requests. **_Completed budget materials are due at 5:00pm on Friday December 16th, 2022._**
+
+
+Please contact your Budget Analyst if you have additional questions regarding the FY 2024 planning process.
+
+<!-- \backgroundsetup{contents={}} -->
