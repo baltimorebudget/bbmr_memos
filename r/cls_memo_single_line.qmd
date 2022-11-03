@@ -7,7 +7,8 @@ knitr::opts_chunk$set(
 )
 
 options(knitr.table.format = "latex",
-        knitr.kable.NA = '')
+        knitr.kable.NA = '',
+        knitr.table.vline = "")
 
 ```
 
@@ -17,7 +18,7 @@ options(knitr.table.format = "latex",
 
 \hfill Fiscal 2024: Current Level of Service Calculation \hfill \hfill \hfill \break
 
-`r agency_clean` Agency Head/Fiscal Officer \hfill \hfill `r format(Sys.Date(), format="%B %d %Y")`
+`r agency` Agency Head/Fiscal Officer \hfill \hfill `r format(Sys.Date(), format="%B %d %Y")`
 
 ```{r Total Budget, echo = FALSE, warning = FALSE}
 
@@ -51,25 +52,16 @@ output <- adjustments %>%
   mutate(`FY24 CLS` = case_when(is.na(`FY24 CLS`) ~ replace_na("--"),
                             TRUE ~ `FY24 CLS`))
 
-if (dim(output)[1] > 1) {
+
 output %>%
   kable(format = "latex", longtable = TRUE, align = c("l", "l","r", "r"), escape = TRUE) %>%
-  column_spec(1, width = ".25in") %>%
-  column_spec(2, width = "3.in") %>%
-  column_spec(3:4, width = "1.2in") %>%
-  collapse_rows(columns = 1:2, row_group_label_position = "stack", longtable_clean_cut = FALSE) %>%
   kable_styling(latex_options = c("repeat_header"), full_width = FALSE, 
-                fixed_thead = FALSE, font_size = 10) %>%
-  row_spec(0, bold = TRUE)} else {
-    output %>%
-  kable(format = "latex", longtable = TRUE, align = c("l", "l","r", "r"), escape = TRUE) %>%
-  kable_styling(latex_options = c("repeat_header"), full_width = FALSE, 
-                fixed_thead = FALSE, font_size = 10) %>%
+                fixed_thead = FALSE, font_size = 12) %>%
   row_spec(0, bold = TRUE) %>%
-  column_spec(1, width = "1in") %>%
-  column_spec(2, width = "3in") %>%
-  column_spec(3:4, width = "1.2in")
-  }
+  column_spec(1, width = "1in", border_right = FALSE) %>%
+  column_spec(2, width = "3in", border_right = FALSE) %>%
+  column_spec(3:4, width = "1in", border_right = FALSE)
+
 
 ```
 We have also included excel files with the line item and position detail showing the agency’s CLS amounts. Please reference the FY 2024 Budget Instructions and Kickoff Slides for additional information and resources on completing your FY 2024 Operating Request. All systems are open for your team to begin their work on operating budget requests. **_Completed budget materials are due at 5:00pm on Friday December 16th, 2022._**

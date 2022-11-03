@@ -20,8 +20,7 @@ adjustments <- readxl::read_excel("G:/Fiscal Years/Fiscal 2024/Planning Year/1. 
   left_join(analysts, by = "Agency ID")  %>%
   mutate(`Program ID` = as.character(`Program ID`),
          `$ Change vs FY23 Adopted` = `FY24 CLS` - `FY23 Adopted`,
-         `Program Name` = str_replace_all(`Program Name`, "&", "and"),
-         `Program Name` = str_replace_all(`Program Name`, " -", ",")) %>%
+         `Program Name` = str_replace_all(`Program Name`, "&", "and")) %>%
   rename(`Agency Name` = `Agency Name.x`) %>%
   select(-starts_with("...")) %>%
   filter(!is.na(`Agency Name`)) %>%
@@ -68,6 +67,7 @@ problem_agencies <- c("M-R: Miscellaneous General Expenses", "M-R: Office of Nei
                       "Baltimore Museum of Art",                           "Maryland Zoo",                                    
                       "Baltimore Office of Promotion & the Arts")
 
+
 map(problem_agencies, function(x) {
   
   knitr::knit_meta(class = NULL, clean = TRUE)
@@ -86,15 +86,50 @@ map(problem_agencies, function(x) {
 } 
 )
 
-# 
-# adjustments %>%
-#   filter(`Agency Name` == "Courts: Circuit Court") %>%
-#   rename(Service = `Program Name`) %>%
-#   # mutate(`Service - Activity` = paste0(`Program Name`, "-" ,`Activity Name`)) %>%
-#   select(Service, `Fund Name`, `FY23 Adopted`, `FY24 CLS`) %>%
-#   group_by(`Fund Name`, Service) %>%
-#   summarise(`FY23 Adopted` = sum(`FY23 Adopted`, na.rm = TRUE),
-#             `FY24 CLS` = sum(`FY24 CLS`, na.rm = TRUE)) %>%
-#   mutate_if(is.numeric, scales::dollar, style_negative = "parens") %>%
-#   mutate(`FY24 CLS` = case_when(is.na(`FY24 CLS`) ~ replace_na("--"),
-#                                 TRUE ~ `FY24 CLS`))
+# problem agencies ================
+##build in a try-catch
+adjustments %>%
+  filter(`Agency Name` == "M-R: Miscellaneous General Expenses") %>%
+  rename(Service = `Program Name`) %>%
+  # mutate(`Service - Activity` = paste0(`Program Name`, "-" ,`Activity Name`)) %>%
+  select(Service, `Fund Name`, `FY23 Adopted`, `FY24 CLS`) %>%
+  group_by(`Fund Name`, Service) %>%
+  summarise(`FY23 Adopted` = sum(`FY23 Adopted`, na.rm = TRUE),
+            `FY24 CLS` = sum(`FY24 CLS`, na.rm = TRUE)) %>%
+  mutate_if(is.numeric, scales::dollar, style_negative = "parens") %>%
+  mutate(`FY24 CLS` = case_when(is.na(`FY24 CLS`) ~ replace_na("--"),
+                                TRUE ~ `FY24 CLS`))
+
+knitr::knit_meta(class = NULL, clean = TRUE)
+agency_clean <- analysts$`Agency Name - Cleaned`[analysts$`Agency Name` == x]
+agency <- analysts$`Agency Name`[analysts$`Agency Name` == x]
+type <- "agency"
+
+rmarkdown::render(
+  'r/cls_memo_single_line.qmd',
+  output_file = paste0(
+    "FY24 CLS ", 
+    agency_clean, 
+    ".pdf"),
+  output_dir = "outputs/_FY24 CLS")
+
+##quasis
+quasis <- c(                      "Legal Aid",                                         "Family League",                                    
+                                  "Baltimore Heritage Area",                           "Lexington Market",                                 
+                                  "Baltimore Public Markets",                          "Visit Baltimore",                                  
+                                  "Baltimore Symphony Orchestra",                      "Walters Art Museum",                               
+                                  "Baltimore Museum of Art",                           "Maryland Zoo",                                    
+                                  "Baltimore Office of Promotion & the Arts")
+
+map(quasis, function(x) {
+  agency = x
+  
+  knitr::knit_meta(class = NULL, clean = TRUE)
+  rmarkdown::render(
+    'r/cls_memo_single_line.qmd',
+    output_file = paste0(
+      "FY24 CLS ", 
+      agency, 
+      ".pdf"),
+    output_dir = "outputs/_FY24 CLS")
+})
