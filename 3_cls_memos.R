@@ -89,7 +89,7 @@ map(problem_agencies, function(x) {
 # problem agencies ================
 ##build in a try-catch
 adjustments %>%
-  filter(`Agency Name` == "M-R: Miscellaneous General Expenses") %>%
+  filter(`Agency Name` == "Family League") %>%
   rename(Service = `Program Name`) %>%
   # mutate(`Service - Activity` = paste0(`Program Name`, "-" ,`Activity Name`)) %>%
   select(Service, `Fund Name`, `FY23 Adopted`, `FY24 CLS`) %>%
@@ -113,13 +113,14 @@ rmarkdown::render(
     ".pdf"),
   output_dir = "outputs/_FY24 CLS")
 
-##quasis
-quasis <- c(                      "Legal Aid",                                         "Family League",                                    
+##quasis ========================
+quasis <- c(                     
+  # "Legal Aid",                                         "Family League",
                                   "Baltimore Heritage Area",                           "Lexington Market",                                 
                                   "Baltimore Public Markets",                          "Visit Baltimore",                                  
                                   "Baltimore Symphony Orchestra",                      "Walters Art Museum",                               
                                   "Baltimore Museum of Art",                           "Maryland Zoo",                                    
-                                  "Baltimore Office of Promotion & the Arts")
+                                  "Baltimore Office of Promotion and the Arts")
 
 map(quasis, function(x) {
   agency = x
