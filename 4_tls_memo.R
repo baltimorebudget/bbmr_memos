@@ -1,12 +1,11 @@
 # Generate TLS Target Memos
 
 ################################################################################
-.libPaths("G:/Data/r_library")
-library(bbmR)
-library(bookHelpers)
-library(magrittr)
+.libPaths("C:/Users/sara.brumfield2/OneDrive - City Of Baltimore/Documents/r_library")
+devtools::load_all("G:/Analyst Folders/Sara Brumfield/_packages/bbmR")
+devtools::load_all("G:/Budget Publications/automation/0_data_prep/bookHelpers")
 
-.libPaths("C:/Users/sara.brumfield2/Anaconda3/envs/bbmr/Lib/R/library")
+library(magrittr)
 library(tidyverse)
 library(rio)
 library(lubridate)
@@ -14,85 +13,96 @@ library(rmarkdown)
 library(knitr)
 library(kableExtra)
 library(tinytex)
+library(janitor)
 #tinytex::install_tinytex()
 #remotes::install_github('yihui/tinytex')
 
-analysts <- import("G:/Analyst Folders/Sara Brumfield/_ref/Analyst Assignments.xlsx") %>%
-  filter(!is.na(Analyst)) %>%
-  select(`Agency Name`:Analyst)
+#set colors
+colors_hex = bbmR::colors$hex
+colors_rgb = bbmR::colors$rgb
 
-tls <- import("inputs/FY22 TLS.xlsx", which = 1) %>%
-  mutate_if(is.numeric, replace_na, 0)
+params <- list(
+  #plot colors must be changed separately in bookHelpers package, plots.R, viridis library, viridis_pal() func, options A-H
+  color_header = colors_rgb[["dark blue"]],
+  color_table_header = colors_rgb[["dark blue"]],
+  color_table_header_font = colors_rgb[["white"]],
+  ##must be re-activated in latex_functions.R -> write_header function!!! and re-applied in tables.R in bookHelpers package
+  # color_table_total = colors_rgb[["white"]],
+  # color_table_total_font = colors_rgb[["black"]],
+  # color_table_subtotal = colors_rgb[["gray"]],
+  color_divider = colors_rgb[["dark blue"]]
+)
 
-
-adjustments <- tls %>%
-  select(-starts_with("FY")) %>%
-  pivot_longer(
-    cols = c(`DGS Rent Reallocation`:`Other Adjustments 1`,
-             `Other Adjustments 2`, `Other Adjustments 3`, 
-             `Other Adjustments 4`,
-             `Other Global Adjustments`, `COVID CARES or FEMA Funding`),
-    names_to = "Update", values_to = "Amount")
-
-adj_type <- adjustments %>%
-  select(`Agency Name`:`Other Global Adjustments Type`) %>%
-  pivot_longer(
-    cols = c(`Adjustment Type 1`:`Other Global Adjustments Type`),
-    names_to = "Update", values_to = "Notes") %>%
-  filter(Notes != "0") %>%
-  distinct() %>%
-  mutate(Update = case_when(
-    Update == "Adjustment Type 1" ~ "Other Adjustments 1",
-    Update == "Adjustment Type 2" ~ "Other Adjustments 2",
-    Update == "Adjustment Type 3" ~ "Other Adjustments 3",
-    Update == "Adjustment Type 4" ~ "Other Adjustments 4",
-    Update == "Other Global Adjustments Type" ~ "Other Global Adjustments"
-  ))
-
-adjustments <- adjustments %>%
-  select(-(`Adjustment Type 1`:`Other Global Adjustments Type`)) 
-
-adjustments <- adjustments %>%
-  left_join(adj_type) %>%
-  mutate(Update = ifelse(Update %in% c("Other Adjustments 1", "Other Adjustments 2", 
-                                       "Other Adjustments 3", "Other Adjustments 4"),
-                         "Other Adjustments", Update)) %>%
-  filter(Amount != 0) %>%
-  relocate(Amount)
+info <- list(
+  analysts = import("G:/Analyst Folders/Sara Brumfield/_ref/Analyst Assignments.xlsx", which = "Agencies") %>%
+    distinct(`Analyst`) %>%
+    extract2("Analyst"),
+  agencies = import("G:/Analyst Folders/Sara Brumfield/_ref/Analyst Assignments.xlsx", which = "Agencies") %>%
+    filter(Operational == TRUE) %>%
+    distinct(`Agency ID`, `Agency Name`, `Agency Name - Cleaned`),
+  quasis = import("G:/Analyst Folders/Sara Brumfield/_ref/Analyst Assignments.xlsx", which = "Quasi"))
 
 
-agencies <- unique(tls$`Agency Name`)
-#subagencies <- setdiff(unique(tls$`Subagency Name`), NA)
+tls <- import("G:/Fiscal Years/Fiscal 2024/Planning Year/3. TLS/1. Line Item Reports/line_items_2023-03-13.xlsx",
+              which = "Details") %>%
+  mutate_if(is.numeric, replace_na, 0) %>%
+  rename(`Service ID` = `Program ID`, `Service Name` = `Program Name`, `FY24 Proposal` = `FY24 PROP`) %>%
+  unite("Service", `Service ID`:`Service Name`, sep = ": ")%>%
+  group_by(`Agency ID`, `Agency Name`, `Service`, `Fund ID`, `Fund Name`) %>%
+  summarise_at(vars(`FY23 Adopted`, `FY24 CLS`, `FY24 Proposal`, `FY24 TLS`, `$ - Change vs Adopted`, `% - Change vs Adopted`),
+               sum, na.rm = TRUE)
+
+##old code? =======
+# adjustments <- tls %>%
+#   select(-starts_with("FY")) %>%
+#   pivot_longer(
+#     cols = c(`DGS Rent Reallocation`:`Other Adjustments 1`,
+#              `Other Adjustments 2`, `Other Adjustments 3`, 
+#              `Other Adjustments 4`,
+#              `Other Global Adjustments`, `COVID CARES or FEMA Funding`),
+#     names_to = "Update", values_to = "Amount")
+# 
+# adj_type <- adjustments %>%
+#   select(`Agency Name`:`Other Global Adjustments Type`) %>%
+#   pivot_longer(
+#     cols = c(`Adjustment Type 1`:`Other Global Adjustments Type`),
+#     names_to = "Update", values_to = "Notes") %>%
+#   filter(Notes != "0") %>%
+#   distinct() %>%
+#   mutate(Update = case_when(
+#     Update == "Adjustment Type 1" ~ "Other Adjustments 1",
+#     Update == "Adjustment Type 2" ~ "Other Adjustments 2",
+#     Update == "Adjustment Type 3" ~ "Other Adjustments 3",
+#     Update == "Adjustment Type 4" ~ "Other Adjustments 4",
+#     Update == "Other Global Adjustments Type" ~ "Other Global Adjustments"
+#   ))
+# 
+# adjustments <- adjustments %>%
+#   select(-(`Adjustment Type 1`:`Other Global Adjustments Type`)) 
+# 
+# adjustments <- adjustments %>%
+#   left_join(adj_type) %>%
+#   mutate(Update = ifelse(Update %in% c("Other Adjustments 1", "Other Adjustments 2", 
+#                                        "Other Adjustments 3", "Other Adjustments 4"),
+#                          "Other Adjustments", Update)) %>%
+#   filter(Amount != 0) %>%
+#   relocate(Amount)
+
+
 
 ##pdf export ==============================
-map(agencies, function(x) {
+map(info$agencies$`Agency ID`, function(x) {
   
   knitr::knit_meta(class = NULL, clean = TRUE)
   
-  type <- "agency"
-  
   rmarkdown::render(
-    'r/FY22/FY22_TLS_Target_Memos.Rmd',
+    'r/tls_memo.qmd',
     output_file = paste0(
-      "FY23 TLS Prelim ", 
-      analysts$`Agency Name - Cleaned`[analysts$`Agency Name` == x], 
+      "FY24 TLS ", 
+      info$agencies$`Agency Name - Cleaned`[info$agencies$`Agency ID` == x], 
       ".pdf"),
     output_dir = "outputs/_FY24 TLS")
   }
-)
-
-map(agencies, function(x) {
-  
-  knitr::knit_meta(class = NULL, clean = TRUE)
-  
-  type <- "agency"
-  
-  rmarkdown::render(
-    'r/FY22/FY22_TLS_Target_Memos.Rmd',
-    output_file = paste0(
-      "FY23 TLS Prelim ", x, ".pdf"),
-    output_dir = "outputs/_FY23 TLS")
-}
 )
 
 ##pdf workaround ==================

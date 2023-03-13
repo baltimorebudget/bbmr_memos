@@ -1,0 +1,61 @@
+```{r setup, include=FALSE}
+options(tinytex.verbose = TRUE)
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+
+options(knitr.table.format = "latex",
+        knitr.kable.NA = '')
+
+agency_clean <-info$agencies$`Agency Name - Cleaned`[info$agencies$`Agency ID` == x]
+
+```
+
+\hfill \break
+
+\hfill \break
+
+\hfill Fiscal 2024: Target Level of Service \hfill \hfill \hfill \break
+
+`r agency_clean` Agency Head/Fiscal Officer \hfill \hfill `r format(Sys.Date(), format="%B %d %Y")`
+
+```{r Total Budget, echo = FALSE, warning = FALSE}
+
+df <- tls %>%
+  filter(`Agency Name` == agency & `Fund ID` == 1001) %>%
+  ungroup() %>%
+  select(-`Fund Name`, -`Agency ID`, -`Agency Name`, -`% - Change vs Adopted`, -`$ - Change vs Adopted`)
+
+total <- scales::dollar(sum(df$`FY24 TLS`, na.rm = TRUE), style_negative = "parens")
+
+```
+
+
+**Fiscal Year 2024 TLS Amount: `r total `**
+
+Your agency’s Fiscal Year 2024 Target Level of Service (TLS) amount is included below. The table below summarizes your agency’s budget by fund-service. Your Budget Analyst is available to answer specific questions regarding changes reflected in the TLS budget amounts.
+
+```{r TLS Table, echo = FALSE, warning = FALSE}
+
+output <- df %>%
+  group_by(Service) %>%
+  summarise_if(is.numeric, sum, na.rm = TRUE) %>%
+  select(-`Fund ID`) %>%
+  adorn_totals(where = "row", name = "Agency General Fund Total")
+
+output %>%
+  format_table_numbers() %>%
+  format_table(longtable = TRUE, align = c("l", rep("r", 4))) %>%
+  column_spec(1, width = "2.5in") %>%
+  column_spec(2:5, width = "1.0in") %>%
+  kable_styling(latex_options = c("striped"), 
+                fixed_thead = FALSE, font_size = 10) %>%
+  row_spec(0, bold = TRUE)
+
+```
+
+Please contact your Budget Analyst if you have additional questions regarding the FY 2024 planning process.
+
+<!-- \backgroundsetup{contents={}} -->
