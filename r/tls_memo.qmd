@@ -22,7 +22,7 @@ options(knitr.table.format = "latex",
 
 ```{r Total Budget, echo = FALSE, warning = FALSE}
 
-df <- tls %>%
+df <- data %>%
   filter(`Agency Name` == agency & `Fund ID` == 1001) %>%
   ungroup() %>%
   select(-`Fund Name`, -`Agency ID`, -`Agency Name`, -`% - Change vs Adopted`, -`$ - Change vs Adopted`)
@@ -32,9 +32,9 @@ total <- scales::dollar(sum(df$`FY24 TLS`, na.rm = TRUE), style_negative = "pare
 ```
 
 
-**Fiscal Year 2024 TLS Amount: `r total `**
+**Fiscal Year 2024 TLS GF Amount: `r total `**
 
-Your agency’s Fiscal Year 2024 Target Level of Service (TLS) amount is included below. The table below summarizes your agency’s budget by fund-service. Your Budget Analyst is available to answer specific questions regarding changes reflected in the TLS budget amounts.
+Your agency’s Fiscal Year 2024 Target Level of Service (TLS) General Fund amount is included below. The table summarizes your agency’s budget by service. Your Budget Analyst is available to answer specific questions regarding changes reflected in the TLS budget amounts.
 
 ```{r TLS Table, echo = FALSE, warning = FALSE}
 
@@ -49,7 +49,7 @@ output %>%
   kable(longtable = TRUE, booktabs = TRUE,
       format = "latex", escape = TRUE,
       align = c("l", rep("r", 4))) %>%
-  column_spec(1, width = "2.5in") %>%
+  column_spec(1, width = "2.6in") %>%
   column_spec(2:5, width = ".9in") %>%
   kable_styling(latex_options = "striped", font_size = 10) %>%
   row_spec(nrow(output), bold = TRUE) %>%

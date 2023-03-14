@@ -85,6 +85,7 @@ for(x in info$agencies$`Agency ID`) {
   
   agency <- info$agencies$`Agency Name`[info$agencies$`Agency ID` == x]
   agency_clean <-info$agencies$`Agency Name - Cleaned`[info$agencies$`Agency ID` == x]
+  data <- tls
   
   rmarkdown::render(
     'r/tls_memo.qmd',
@@ -115,10 +116,10 @@ quasi_data <- assign_quasi_agency(import("G:/Fiscal Years/Fiscal 2024/Planning Y
 
 for(x in quase_agencies) {
   
-  # knitr::knit_meta(class = NULL, clean = TRUE)
+  knitr::knit_meta(class = NULL, clean = TRUE)
   
   agency <- (quasi_data$`Agency Name`[quasi_data$`Agency Name` == x])[1]
-  tls <- quasi_data
+  data <- quasi_data
   
   rmarkdown::render(
     'r/tls_memo.qmd',
