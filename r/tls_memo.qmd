@@ -7,7 +7,8 @@ knitr::opts_chunk$set(
 )
 
 options(knitr.table.format = "latex",
-        knitr.kable.NA = '')
+        knitr.kable.NA = '',
+        knitr.table.vline = "")
 
 agency_clean <-info$agencies$`Agency Name - Cleaned`[info$agencies$`Agency ID` == x]
 
@@ -47,12 +48,14 @@ output <- df %>%
 
 output %>%
   format_table_numbers() %>%
-  format_table(longtable = TRUE, align = c("l", rep("r", 4))) %>%
+  kable(longtable = TRUE, booktabs = TRUE,
+      format = "latex", escape = TRUE,
+      align = c("l", rep("r", 4))) %>%
   column_spec(1, width = "2.5in") %>%
-  column_spec(2:5, width = "1.0in") %>%
-  kable_styling(latex_options = c("striped"), 
-                fixed_thead = FALSE, font_size = 10) %>%
-  row_spec(0, bold = TRUE)
+  column_spec(2:5, width = ".9in") %>%
+  kable_styling(latex_options = "striped", font_size = 10) %>%
+  row_spec(nrow(output), bold = TRUE) %>%
+  row_spec(0, bold = TRUE, align = "c", background = "#19315f", color = "white")
 
 ```
 

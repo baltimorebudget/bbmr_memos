@@ -18,21 +18,9 @@ library(janitor)
 #remotes::install_github('yihui/tinytex')
 
 #set colors
-colors_hex = bbmR::colors$hex
-colors_rgb = bbmR::colors$rgb
+colors <- bbmR::colors
 
-params <- list(
-  #plot colors must be changed separately in bookHelpers package, plots.R, viridis library, viridis_pal() func, options A-H
-  color_header = colors_rgb[["dark blue"]],
-  color_table_header = colors_rgb[["dark blue"]],
-  color_table_header_font = colors_rgb[["white"]],
-  ##must be re-activated in latex_functions.R -> write_header function!!! and re-applied in tables.R in bookHelpers package
-  # color_table_total = colors_rgb[["white"]],
-  # color_table_total_font = colors_rgb[["black"]],
-  # color_table_subtotal = colors_rgb[["gray"]],
-  color_divider = colors_rgb[["dark blue"]]
-)
-
+##metadata ======
 info <- list(
   analysts = import("G:/Analyst Folders/Sara Brumfield/_ref/Analyst Assignments.xlsx", which = "Agencies") %>%
     distinct(`Analyst`) %>%
@@ -46,7 +34,7 @@ info <- list(
 tls <- import("G:/Fiscal Years/Fiscal 2024/Planning Year/3. TLS/1. Line Item Reports/line_items_2023-03-13.xlsx",
               which = "Details") %>%
   mutate_if(is.numeric, replace_na, 0) %>%
-  rename(`Service ID` = `Program ID`, `Service Name` = `Program Name`, `FY24 Proposal` = `FY24 PROP`) %>%
+  rename(`Service ID` = `Program ID`, `Service Name` = `Program Name`, `FY24 Request` = `FY24 PROP`) %>%
   unite("Service", `Service ID`:`Service Name`, sep = ": ")%>%
   group_by(`Agency ID`, `Agency Name`, `Service`, `Fund ID`, `Fund Name`) %>%
   summarise_at(vars(`FY23 Adopted`, `FY24 CLS`, `FY24 Proposal`, `FY24 TLS`, `$ - Change vs Adopted`, `% - Change vs Adopted`),
@@ -91,10 +79,12 @@ tls <- import("G:/Fiscal Years/Fiscal 2024/Planning Year/3. TLS/1. Line Item Rep
 
 
 ##pdf export ==============================
-map(info$agencies$`Agency ID`, function(x) {
+for(x in info$agencies$`Agency ID`) {
   
   knitr::knit_meta(class = NULL, clean = TRUE)
   
+  agency <- info$agencies$`Agency Name`[info$agencies$`Agency ID` == x]
+
   rmarkdown::render(
     'r/tls_memo.qmd',
     output_file = paste0(
@@ -103,7 +93,6 @@ map(info$agencies$`Agency ID`, function(x) {
       ".pdf"),
     output_dir = "outputs/_FY24 TLS")
   }
-)
 
 ##pdf workaround ==================
 n = 3
