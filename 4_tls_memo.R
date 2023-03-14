@@ -37,7 +37,7 @@ tls <- import("G:/Fiscal Years/Fiscal 2024/Planning Year/3. TLS/1. Line Item Rep
   rename(`Service ID` = `Program ID`, `Service Name` = `Program Name`, `FY24 Request` = `FY24 PROP`) %>%
   unite("Service", `Service ID`:`Service Name`, sep = ": ")%>%
   group_by(`Agency ID`, `Agency Name`, `Service`, `Fund ID`, `Fund Name`) %>%
-  summarise_at(vars(`FY23 Adopted`, `FY24 CLS`, `FY24 Proposal`, `FY24 TLS`, `$ - Change vs Adopted`, `% - Change vs Adopted`),
+  summarise_at(vars(`FY23 Adopted`, `FY24 CLS`, `FY24 Request`, `FY24 TLS`, `$ - Change vs Adopted`, `% - Change vs Adopted`),
                sum, na.rm = TRUE)
 
 ##old code? =======
@@ -84,7 +84,8 @@ for(x in info$agencies$`Agency ID`) {
   knitr::knit_meta(class = NULL, clean = TRUE)
   
   agency <- info$agencies$`Agency Name`[info$agencies$`Agency ID` == x]
-
+  agency_clean <-info$agencies$`Agency Name - Cleaned`[info$agencies$`Agency ID` == x]
+  
   rmarkdown::render(
     'r/tls_memo.qmd',
     output_file = paste0(
@@ -92,7 +93,41 @@ for(x in info$agencies$`Agency ID`) {
       info$agencies$`Agency Name - Cleaned`[info$agencies$`Agency ID` == x], 
       ".pdf"),
     output_dir = "outputs/_FY24 TLS")
-  }
+}
+
+###quasi agencies
+quasi_agencies <- c("Legal Aid",                                         "Family League",                                    
+                    "Baltimore Heritage Area",                           "Lexington Market",                                 
+                    "Baltimore Public Markets",                          "Visit Baltimore",                                  
+                    "Baltimore Symphony Orchestra",                      "Walters Art Museum",                               
+                    "Baltimore Museum of Art",                           "Maryland Zoo",                                    
+                    "Baltimore Office of Promotion & the Arts")
+
+quasi_data <- assign_quasi_agency(import("G:/Fiscal Years/Fiscal 2024/Planning Year/3. TLS/1. Line Item Reports/line_items_2023-03-13.xlsx",
+                                         which = "Details")) %>%
+  filter(`Agency Name` %in% quasi_agencies) %>%
+  mutate_if(is.numeric, replace_na, 0) %>%
+  rename(`Service ID` = `Program ID`, `Service Name` = `Program Name`, `FY24 Request` = `FY24 PROP`) %>%
+  unite("Service", `Service ID`:`Service Name`, sep = ": ")%>%
+  group_by(`Agency ID`, `Agency Name`, `Service`, `Fund ID`, `Fund Name`) %>%
+  summarise_at(vars(`FY23 Adopted`, `FY24 CLS`, `FY24 Request`, `FY24 TLS`, `$ - Change vs Adopted`, `% - Change vs Adopted`),
+               sum, na.rm = TRUE)
+
+for(x in quase_agencies) {
+  
+  # knitr::knit_meta(class = NULL, clean = TRUE)
+  
+  agency <- (quasi_data$`Agency Name`[quasi_data$`Agency Name` == x])[1]
+  tls <- quasi_data
+  
+  rmarkdown::render(
+    'r/tls_memo.qmd',
+    output_file = paste0(
+      "FY24 TLS ", 
+      agency, 
+      ".pdf"),
+    output_dir = "outputs/_FY24 TLS")
+}
 
 ##pdf workaround ==================
 n = 3

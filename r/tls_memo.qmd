@@ -1,5 +1,5 @@
 ```{r setup, include=FALSE}
-options(tinytex.verbose = TRUE)
+options(tinytex.verbose = FALSE)
 knitr::opts_chunk$set(
   echo = FALSE,
   message = FALSE,
@@ -9,8 +9,6 @@ knitr::opts_chunk$set(
 options(knitr.table.format = "latex",
         knitr.kable.NA = '',
         knitr.table.vline = "")
-
-agency_clean <-info$agencies$`Agency Name - Cleaned`[info$agencies$`Agency ID` == x]
 
 ```
 
