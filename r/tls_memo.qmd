@@ -57,6 +57,47 @@ output %>%
 
 ```
 
-Please contact your Budget Analyst if you have additional questions regarding the FY 2024 planning process.
+```{r Enhancements}
 
-<!-- \backgroundsetup{contents={}} -->
+# enh <- enhancement %>%
+#   filter(Agency == x)
+# 
+# if (dim(enh)[0] > 0 ) {
+#   cat("Your agency is receiving additional budget actions as part of the Financial Recommendation.")
+#   
+#   enh %>%
+#     format_table()
+# }
+
+```
+
+```{r Missing Performance Measures, results='asis'}
+
+pms = performance %>%
+  filter(`Agency Name` == agency & (`Actual 2023` != "N/A" | `Actual 2022` == "N/A" | `Target 2024` == "N/A")) %>%
+  select(-`Agency Name`) %>%
+  unite("Service", `Service ID`:`Service Name`, sep = ": ", remove = TRUE)
+
+pms[pms == "N/A"] <- "Missing"
+
+if (dim(pms)[1] > 0) {
+  cat(paste0("Your agency is missing one or more data points for your performance data as of Tuesday, March 14, 2023. The table below summarizes missing data that needs to be updated in Scorecard by March 31, 2023."))
+  
+  pms %>%
+  kable(longtable = TRUE, booktabs = TRUE,
+      format = "latex", escape = TRUE,
+      align = c("l", "l", rep("r", 3))) %>%
+  collapse_rows(1:2, valign = "top", latex_hline = "major", row_group_label_position = "stack") %>%
+  column_spec(1, width = ".25in") %>%
+  column_spec(2, width = "3.0in") %>%
+  column_spec(3:5, width = "1.0in") %>%
+  kable_styling(latex_options = "striped", font_size = 10) %>%
+  row_spec(0, bold = TRUE, align = "c", background = "#19315f", color = "white")
+
+}
+
+
+
+```
+
+\backgroundsetup{contents={}}
