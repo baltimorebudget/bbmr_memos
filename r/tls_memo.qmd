@@ -44,6 +44,8 @@ output <- df %>%
   select(-`Fund ID`) %>%
   adorn_totals(where = "row", name = "Agency General Fund Total")
 
+tbl_len = dim(output)[1]
+
 output %>%
   format_table_numbers() %>%
   kable(longtable = TRUE, booktabs = TRUE,
@@ -80,6 +82,8 @@ pms = performance %>%
 
 pms[pms == "N/A"] <- "Missing"
 
+pm_len = dim(pms)[1]
+
 if (dim(pms)[1] > 0) {
   cat(paste0("Your agency is missing one or more data points for your performance data as of Tuesday, March 14, 2023. The table below summarizes missing data that needs to be updated in Scorecard by March 31, 2023."))
   
@@ -100,4 +104,8 @@ if (dim(pms)[1] > 0) {
 
 ```
 
-\backgroundsetup{contents={}}
+```{r}
+if(tbl_len + pm_len >= 20){
+cat("\\backgroundsetup{contents={}}")
+}
+```
