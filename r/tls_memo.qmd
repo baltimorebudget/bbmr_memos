@@ -74,7 +74,7 @@ output %>%
 ```{r Missing Performance Measures, results='asis'}
 
 pms = performance %>%
-  filter(`Agency Name` == agency & (`Actual 2023` != "N/A" | `Actual 2022` == "N/A" | `Target 2024` == "N/A")) %>%
+  filter(`Agency Name` == agency & (`Actual 2022` == "N/A" | `Target 2024` == "N/A")) %>%
   select(-`Agency Name`) %>%
   unite("Service", `Service ID`:`Service Name`, sep = ": ", remove = TRUE)
 

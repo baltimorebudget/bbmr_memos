@@ -42,7 +42,7 @@ tls <- import("G:/Fiscal Years/Fiscal 2024/Planning Year/3. TLS/1. Line Item Rep
 
 performance <- import("G:/Budget Publications/automation/0_data_prep/dist/scorecard/Scorecard Citywide.xlsx", which = "Performance Measures") %>%
   rename(`Agency Name` = `Agency Name - Cleaned`) %>%
-  select(`Agency Name`, `Service ID`, `Service Name`, Measure, `Actual 2022`, `Actual 2023`, `Target 2024`)
+  select(`Agency Name`, `Service ID`, `Service Name`, Measure, `Actual 2022`, `Target 2024`)
 
 ##old code? =======
 # adjustments <- tls %>%
