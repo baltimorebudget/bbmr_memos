@@ -40,7 +40,7 @@ tls <- import("G:/Fiscal Years/Fiscal 2024/Planning Year/3. TLS/1. Line Item Rep
   summarise_at(vars(`FY23 Adopted`, `FY24 CLS`, `FY24 Request`, `FY24 TLS`, `$ - Change vs Adopted`, `% - Change vs Adopted`),
                sum, na.rm = TRUE)
 
-performance <- import("G:/Budget Publications/automation/0_data_prep/dist/scorecard/Scorecard Citywide.xlsx", which = "Performance Measures") %>%
+performance <- import("G:/Budget Publications/automation/0_data_prep/dist/scorecard/Scorecard_TLS memos.xlsx", which = "Performance Measures") %>%
   rename(`Agency Name` = `Agency Name - Cleaned`) %>%
   select(`Agency Name`, `Service ID`, `Service Name`, Measure, `Actual 2022`, `Target 2024`)
 
