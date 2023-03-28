@@ -118,7 +118,7 @@ quasi_data <- assign_quasi_agency(import("G:/Fiscal Years/Fiscal 2024/Planning Y
   summarise_at(vars(`FY23 Adopted`, `FY24 CLS`, `FY24 Request`, `FY24 TLS`, `$ - Change vs Adopted`, `% - Change vs Adopted`),
                sum, na.rm = TRUE)
 
-for(x in quase_agencies) {
+for(x in quasi_agencies) {
   
   knitr::knit_meta(class = NULL, clean = TRUE)
   
