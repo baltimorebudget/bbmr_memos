@@ -66,7 +66,7 @@ The Fiscal 2024 Agency Detail Book will publish performance measure information 
 ```{r Missing Performance Measures, results='asis'}
 
 pms = performance %>%
-  filter(`Agency Name` == agency & (`Actual 2022` == "N/A" | `Target 2024` == "N/A")) %>%
+  filter(`Agency Name` == agency_clean & (`Actual 2022` == "N/A" | `Target 2024` == "N/A")) %>%
   select(-`Agency Name`) %>%
   unite("Service", `Service ID`:`Service Name`, sep = ": ", remove = TRUE)
 
@@ -77,9 +77,19 @@ pm_len = dim(pms)[1]
 if (dim(pms)[1] > 0) {
   cat("\\newpage")
   cat("\\backgroundsetup{contents={}}")
-  cat(paste0("Your agency is missing one or more data points for your performance data as of Tuesday, March 14, 2023. The table below summarizes missing data that needs to be updated in Scorecard by March 31, 2023."))
-  
+  cat("*Your agency is missing one or more data points for your performance data as of Tuesday, March 14, 2023.*")
+  if (pm_len == 1) {
   pms %>%
+  kable(longtable = TRUE, booktabs = TRUE,
+      format = "latex", escape = TRUE,
+      align = c("l", "l", rep("r", 3))) %>%
+  column_spec(1, width = "1.25in") %>%
+  column_spec(2, width = "3.0in") %>%
+  column_spec(3:4, width = "1.0in") %>%
+  kable_styling(latex_options = "striped", font_size = 10) %>%
+  row_spec(0, bold = TRUE, align = "c", background = "#19315f", color = "white")
+  } else {
+      pms %>%
   kable(longtable = TRUE, booktabs = TRUE,
       format = "latex", escape = TRUE,
       align = c("l", "l", rep("r", 3))) %>%
@@ -89,9 +99,10 @@ if (dim(pms)[1] > 0) {
   column_spec(3:4, width = "1.0in") %>%
   kable_styling(latex_options = "striped", font_size = 10) %>%
   row_spec(0, bold = TRUE, align = "c", background = "#19315f", color = "white")
+  }
 
 } else {
-  cat("Your agency is not missing any performance measure data points for Fiscal Year 2024's budget publications.")
+  cat("*Your agency is not missing any performance measure data points for Fiscal Year 2024's budget publications.*")
 }
 
 
@@ -107,7 +118,7 @@ The schedule for the City Council hearings was distributed on March 28th. BBMR p
 The budget system will open for agency users on April 4th to make modifications to grant budgets. Grant budget updates must be completed by Wednesday April 12th. During this time adjustments, can only be made to grant funds (State, Federal, and Special). No changes to General Fund amounts can be made during this time.
 
 ```{r Remove Header Second Page, results='asis'}
-if (dim(pms)[1] > 0) {
+if (pm_len > 0 | tbl_len >= 7) {
   cat("\\backgroundsetup{contents={}}")
 }
 ```

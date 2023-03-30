@@ -106,9 +106,9 @@ quasi_agencies <- c("Legal Aid",                                         "Family
                     "Baltimore Public Markets",                          "Visit Baltimore",                                  
                     "Baltimore Symphony Orchestra",                      "Walters Art Museum",                               
                     "Baltimore Museum of Art",                           "Maryland Zoo",                                    
-                    "Baltimore Office of Promotion & the Arts")
+                    "Baltimore Office of Promotion and the Arts")
 
-quasi_data <- assign_quasi_agency(import("G:/Fiscal Years/Fiscal 2024/Planning Year/3. TLS/1. Line Item Reports/line_items_2023-03-13.xlsx",
+quasi_data <- assign_quasi_agency(import("G:/Fiscal Years/Fiscal 2024/Planning Year/4. FinRec/1. Line Item Reports/line_items_2023-03-29.xlsx",
                                          which = "Details")) %>%
   filter(`Agency Name` %in% quasi_agencies) %>%
   mutate_if(is.numeric, replace_na, 0) %>%
@@ -123,6 +123,7 @@ for(x in quasi_agencies) {
   knitr::knit_meta(class = NULL, clean = TRUE)
   
   agency <- (quasi_data$`Agency Name`[quasi_data$`Agency Name` == x])[1]
+  agency_clean <- agency
   data <- quasi_data
   
   rmarkdown::render(
