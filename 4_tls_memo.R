@@ -122,6 +122,7 @@ for(x in quasi_agencies) {
   
   knitr::knit_meta(class = NULL, clean = TRUE)
   
+  ##not sure how to get missing PMs in here for quasis
   agency <- (quasi_data$`Agency Name`[quasi_data$`Agency Name` == x])[1]
   agency_clean <- agency
   data <- quasi_data
