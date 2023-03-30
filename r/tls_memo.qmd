@@ -34,7 +34,7 @@ total <- scales::dollar(sum(df$`FY24 TLS`, na.rm = TRUE), style_negative = "pare
 
 **Fiscal Year 2024 TLS GF Amount: `r total `**
 
-Your agency’s Fiscal Year 2024 Target Level of Service (TLS) General Fund amount is included below. The table summarizes your agency’s budget by service. Your Budget Analyst is available to answer specific questions regarding changes reflected in the TLS budget amounts.
+Your agency’s Fiscal Year 2024 Target Level of Service (TLS) is summarized by agency below (General Fund amounts only). The Fiscal 2024 Preliminary Budget includes increases to turnover savings in many General Fund agencies to realize savings from vacant positions. Individual agency budgets may reflect additional adjustments, all changes are described in line item justifications in BPFS. BBMR Budget Analysts are available to describe adjustments made to individual agency budgets.
 
 ```{r TLS Table, echo = FALSE, warning = FALSE}
 
@@ -59,19 +59,9 @@ output %>%
 
 ```
 
-```{r Enhancements}
+**Performance Measure Updates**
 
-# enh <- enhancement %>%
-#   filter(Agency == x)
-# 
-# if (dim(enh)[0] > 0 ) {
-#   cat("Your agency is receiving additional budget actions as part of the Financial Recommendation.")
-#   
-#   enh %>%
-#     format_table()
-# }
-
-```
+The Fiscal 2024 Agency Detail Book will publish performance measure information that was included with service proposals submitted in December. The table below summarizes missing information in your performance measures. Updates can be made directly in the Scorecard, reference the Fiscal 2024 Budget Instructions for information on accessing Scorecard. Completed information for the measures is due Friday April 14th.
 
 ```{r Missing Performance Measures, results='asis'}
 
@@ -85,6 +75,8 @@ pms[pms == "N/A"] <- "Missing"
 pm_len = dim(pms)[1]
 
 if (dim(pms)[1] > 0) {
+  cat("\\newpage")
+  cat("\\backgroundsetup{contents={}}")
   cat(paste0("Your agency is missing one or more data points for your performance data as of Tuesday, March 14, 2023. The table below summarizes missing data that needs to be updated in Scorecard by March 31, 2023."))
   
   pms %>%
@@ -93,19 +85,29 @@ if (dim(pms)[1] > 0) {
       align = c("l", "l", rep("r", 3))) %>%
   collapse_rows(1:2, valign = "top", latex_hline = "major", row_group_label_position = "stack") %>%
   column_spec(1, width = ".25in") %>%
-  column_spec(2, width = "3.0in") %>%
-  column_spec(3:5, width = "1.0in") %>%
+  column_spec(2, width = "4.0in") %>%
+  column_spec(3:4, width = "1.0in") %>%
   kable_styling(latex_options = "striped", font_size = 10) %>%
   row_spec(0, bold = TRUE, align = "c", background = "#19315f", color = "white")
 
+} else {
+  cat("Your agency is not missing any performance measure data points for Fiscal Year 2024's budget publications.")
 }
 
 
 
 ```
 
-```{r}
-if(tbl_len + pm_len >= 20){
-cat("\\backgroundsetup{contents={}}")
+**Upcoming Fiscal 2024 Milestones**
+
+The Preliminary Budget will be released on April 6th. The BOE Agency Budget hearing will take place on Wednesday April 26th at 10:00 a.m. in BOE Chambers. All Cabinet members, or their representative, need to attend this in-person session. 
+
+The schedule for the City Council hearings was distributed on March 28th. BBMR provide additional information to help prepare for this year’s hearings.  
+
+The budget system will open for agency users on April 4th to make modifications to grant budgets. Grant budget updates must be completed by Wednesday April 12th. During this time adjustments, can only be made to grant funds (State, Federal, and Special). No changes to General Fund amounts can be made during this time.
+
+```{r Remove Header Second Page, results='asis'}
+if (dim(pms)[1] > 0) {
+  cat("\\backgroundsetup{contents={}}")
 }
 ```
