@@ -31,18 +31,26 @@ info <- list(
   quasis = import("G:/Analyst Folders/Sara Brumfield/_ref/Analyst Assignments.xlsx", which = "Quasi"))
 
 
-tls <- import("G:/Fiscal Years/Fiscal 2024/Planning Year/4. FinRec/1. Line Item Reports/line_items_2023-03-29.xlsx",
+tls <- import("G:/Fiscal Years/Fiscal 2024/Planning Year/4. FinRec/1. Line Item Reports/line_items_2023-04-05.xlsx",
               which = "Details") %>%
   mutate_if(is.numeric, replace_na, 0) %>%
   rename(`Service ID` = `Program ID`, `Service Name` = `Program Name`, `FY24 Request` = `FY24 PROP`) %>%
-  unite("Service", `Service ID`:`Service Name`, sep = ": ")%>%
+  unite("Service", `Service ID`:`Service Name`, sep = ": ") %>%
   group_by(`Agency ID`, `Agency Name`, `Service`, `Fund ID`, `Fund Name`) %>%
-  summarise_at(vars(`FY23 Adopted`, `FY24 CLS`, `FY24 Request`, `FY24 TLS`, `$ - Change vs Adopted`, `% - Change vs Adopted`),
-               sum, na.rm = TRUE)
+  summarise_at(vars(`FY23 Adopted`, `FY24 CLS`, `FY24 Request`, `FY24 TLS`, `FY24 FINREC`, `$ - Change vs Adopted`, `% - Change vs Adopted`),
+               sum, na.rm = TRUE) %>%
+  #MWBO workaround
+  select(-`FY24 TLS`) %>%
+  rename(`FY24 TLS` = `FY24 FINREC`)
 
 performance <- import("G:/Budget Publications/automation/0_data_prep/dist/scorecard/Scorecard_TLS memos.xlsx", which = "Performance Measures") %>%
   rename(`Agency Name` = `Agency Name - Cleaned`) %>%
   select(`Agency Name`, `Service ID`, `Service Name`, Measure, `Actual 2022`, `Target 2024`)
+
+##MWBO workround FY24
+performance <- performance %>%
+  mutate(`Agency Name` = ifelse(`Service ID` == "869", "MR Minority and Women’s Business Development", `Agency Name`),
+         `Service ID` = ifelse(`Service ID` == "869", "834", `Service ID`))
 
 ##old code? =======
 # adjustments <- tls %>%
